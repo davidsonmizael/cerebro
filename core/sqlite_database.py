@@ -1,7 +1,7 @@
 import sqlite3
 
 class SQLiteDatabase:
-    def __init__(self, db_file):
+    def __init__(self, db_file='assets/cerebro.db'):
         self.conn = sqlite3.connect(db_file)
         self.cursor = self.conn.cursor()
 
