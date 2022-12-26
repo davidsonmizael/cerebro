@@ -8,3 +8,7 @@
     </a>
   </p>
 </p>
+
+## Resources
+
+This project uses country based ASN data from the [sapics/ip-location-db](https://github.com/sapics/ip-location-db) repository.

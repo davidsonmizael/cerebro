@@ -15,3 +15,9 @@ def insert_task_run(task_name, start_time, status, additional_info):
     with SQLiteDatabase() as db:
         db.execute("INSERT INTO task_run (task_name, start_date, end_date, status, additional_info) VALUES (?, ?, datetime('now', 'localtime'), ?, ?)", [task_name, start_time, status, additional_info])
 
+def get_task_config(task_name, config_name):
+    with SQLiteDatabase() as db:
+        result = db.execute_fetchone("SELECT config_value FROM task_config WHERE task_name = ? AND config_name = ?", [task_name, config_name])
+    
+    if result:
+        return result[0]

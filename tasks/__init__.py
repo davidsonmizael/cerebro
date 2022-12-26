@@ -1,1 +1,1 @@
-from . import *
+from .update_ip_range import UpdateIpRangeTask
