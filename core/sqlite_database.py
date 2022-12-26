@@ -31,7 +31,10 @@ class SQLiteDatabase:
 
     def create_tables(self):
         queries = []
+        queries.append('''CREATE TABLE IF NOT EXISTS task (name TEXT PRIMARY KEY, frequency TEXT, last_run_date TEXT, status TEXT)''')
+        queries.append('''CREATE TABLE IF NOT EXISTS task_run (id INTEGER PRIMARY KEY AUTOINCREMENT, task_name TEXT, start_date TEXT, end_date TEXT, status TEXT, additional_info TEXT)''')
         queries.append('''CREATE TABLE IF NOT EXISTS event (id INTEGER PRIMARY KEY AUTOINCREMENT, event_name TEXT, timestamp TEXT, message TEXT, type TEXT)''')
+
         for query in queries:
             self.execute(query)
         self.conn.commit()
