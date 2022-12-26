@@ -31,6 +31,7 @@ class SQLiteDatabase:
 
     def create_tables(self):
         queries = []
+        queries.append('''CREATE TABLE IF NOT EXISTS event (id INTEGER PRIMARY KEY AUTOINCREMENT, event_name TEXT, timestamp TEXT, message TEXT, type TEXT)''')
         for query in queries:
             self.execute(query)
         self.conn.commit()
