@@ -1,7 +1,13 @@
 from util.event_logger_util import *
 import logging
 
-logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s', filename='logs/events.log')
+logging.basicConfig(
+    level=logging.INFO, 
+    format='%(asctime)s - %(levelname)s - %(message)s', 
+    handlers=[
+        logging.FileHandler('logs/events.log'),
+        logging.StreamHandler()
+    ])
 
 class EventLogger:
 
