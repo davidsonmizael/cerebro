@@ -2,7 +2,7 @@ from util.event_logger_util import *
 import logging
 
 logging.basicConfig(
-    level=logging.INFO, 
+    level=logging.DEBUG, 
     format='%(asctime)s - %(levelname)s - %(message)s', 
     handlers=[
         logging.FileHandler('logs/events.log'),
