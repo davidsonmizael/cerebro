@@ -6,6 +6,15 @@
     <a href="https://github.com/davidsonmizael/cerebro/blob/master/LICENSE">
       <img src="https://img.shields.io/github/license/Ileriayo/markdown-badges?style=flat">
     </a>
+    <a href="https://github.com/davidsonmizael/cerebro/issues">
+      <img src="https://img.shields.io/github/issues/davidsonmizael/cerebro.svg">
+    </a>
+    <a href="https://github.com/davidsonmizael/cerebro/network">
+      <img src="https://img.shields.io/github/forks/davidsonmizael/cerebro.svg">
+    </a>
+    <a href="https://github.com/davidsonmizael/cerebro/stargazers">
+      <img src="https://img.shields.io/github/stars/davidsonmizael/cerebro.svg">
+    </a>
   </p>
 </p>
 
