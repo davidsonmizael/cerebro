@@ -1,1 +1,1 @@
-from .map_active_ips import MapActiveIpsTask
+from .update_ip_range import UpdateASNTask
