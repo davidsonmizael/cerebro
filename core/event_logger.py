@@ -18,10 +18,15 @@ class EventLogger:
         save_event_in_db(event_name, timestamp, msg, log_type)
 
     @staticmethod
-    def log_error(msg, stack) -> None:
+    def log_error(msg, exception=None) -> None:
         timestamp, log_type, event_name = get_current_time(), get_log_type(), get_caller_class_name()
-        logging.error("[%s] - %s \nStackTrace: %s" % (event_name, msg, stack))
-        save_event_in_db(event_name, timestamp, f"{msg}\n StackTrace: {stack}", log_type)
+        
+        msg = f"[{event_name}] - {msg}"
+        if exception:
+            msg += "\n" + exception
+
+        logging.error("[%s] - %s" % (event_name, msg))
+        save_event_in_db(event_name, timestamp, msg, log_type)
 
     @staticmethod
     def log_debug(msg) -> None:

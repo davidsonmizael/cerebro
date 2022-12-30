@@ -2,6 +2,7 @@ from functools import wraps
 from datetime import datetime
 from util.task_util import *
 from core import EventLogger
+import traceback
 
 def monitor_task(func):
     @wraps(func)
@@ -19,7 +20,7 @@ def monitor_task(func):
             update_task_status(task_name, status)
         except Exception as e:
             status = 'FAILED'
-            additional_info = str(e)
+            additional_info = "".join(traceback.TracebackException.from_exception(e).format())
             EventLogger.log_error("Task failed.", additional_info)
             update_task_status(task_name, status)
         finally:
