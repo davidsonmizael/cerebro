@@ -1,1 +1,1 @@
-from .update_ip_range import UpdateIpRangeTask
+from .map_active_ips import MapActiveIpsTask

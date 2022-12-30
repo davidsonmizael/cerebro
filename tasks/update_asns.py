@@ -5,7 +5,7 @@ from core.sqlite_database import SQLiteDatabase
 from core.event_logger import EventLogger
 from core.decorators import monitor_task, get_task_config
 
-class UpdateIpRangeTask(TaskInterface):
+class UpdateASNTask(TaskInterface):
 
     def __init__(self) -> None:
         super().__init__()
@@ -29,9 +29,9 @@ class UpdateIpRangeTask(TaskInterface):
         return csv.DictReader(csv_text.split('\n'), fieldnames=['ip_range_start', 'ip_range_end', 'country_code'])
 
     def insert_data(self, db: SQLiteDatabase, data: csv.DictReader) -> None:
-        select_query = "SELECT id FROM ip_range WHERE country_code = ? AND ip_range_start = ? AND ip_range_end = ?"
-        insert_query = "INSERT INTO ip_range(ip_range_start, ip_range_end, country_code, create_date, last_seen_date) VALUES (?, ?, ?, datetime('now', 'localtime'), datetime('now', 'localtime'));"
-        update_query = "UPDATE ip_range SET last_seen_date = datetime('now', 'localtime') WHERE id = ?"
+        select_query = "SELECT id FROM asn_data WHERE country_code = ? AND ip_range_start = ? AND ip_range_end = ?"
+        insert_query = "INSERT INTO asn_data(ip_range_start, ip_range_end, country_code, create_date, last_seen_date) VALUES (?, ?, ?, datetime('now', 'localtime'), datetime('now', 'localtime'));"
+        update_query = "UPDATE asn_data SET last_seen_date = datetime('now', 'localtime') WHERE id = ?"
         
         for row in data:
             select_params = [row['country_code'], row['ip_range_start'], row['ip_range_end']]
