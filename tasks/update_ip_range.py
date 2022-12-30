@@ -14,11 +14,11 @@ class UpdateIpRangeTask(TaskInterface):
     def run(self) -> None:
         EventLogger.log_info("Downloading ASN data from GITHUB")
         data = self.get_asn_data()
-        db = SQLiteDatabase()
         
         EventLogger.log_info("Populating database")
-        self.insert_data(db, data)
-        db.close()
+        with SQLiteDatabase() as db:
+            self.insert_data(db, data)
+
         EventLogger.log_info("Data update completed")
 
     def get_asn_data(self) -> csv.DictReader:
@@ -28,7 +28,7 @@ class UpdateIpRangeTask(TaskInterface):
         csv_text = response.text
         return csv.DictReader(csv_text.split('\n'), fieldnames=['ip_range_start', 'ip_range_end', 'country_code'])
 
-    def insert_data(self, db: SQLiteDatabase, data: csv.DictReader) -> SQLiteDatabase:
+    def insert_data(self, db: SQLiteDatabase, data: csv.DictReader) -> None:
         select_query = "SELECT id FROM ip_range WHERE country_code = ? AND ip_range_start = ? AND ip_range_end = ?"
         insert_query = "INSERT INTO ip_range(ip_range_start, ip_range_end, country_code, create_date, last_seen_date) VALUES (?, ?, ?, datetime('now', 'localtime'), datetime('now', 'localtime'));"
         update_query = "UPDATE ip_range SET last_seen_date = datetime('now', 'localtime') WHERE id = ?"
@@ -45,5 +45,3 @@ class UpdateIpRangeTask(TaskInterface):
                 EventLogger.log_debug("Inserting row: %s: %s - %s" % (row['country_code'], row['ip_range_start'], row['ip_range_end']))
                 params = [row['ip_range_start'], row['ip_range_end'], row['country_code']]
                 db.execute(insert_query, params)
-
-        return db
