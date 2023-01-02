@@ -34,15 +34,19 @@ class UpdateASNTask(TaskInterface):
         insert_query = "INSERT INTO asn_data(ip_range_start, ip_range_end, country_code, create_date, last_seen_date) VALUES (%s, %s, %s, now(), now());"
         update_query = "UPDATE asn_data SET last_seen_date = now() WHERE id = %s"
         
-        for row in data:
+        rows = list(data)
+        total_rows = len(rows)
+
+        for i, row in enumerate(rows, start=1):
             select_params = [row['country_code'], row['ip_range_start'], row['ip_range_end']]
+
             result = db.execute_select(select_query, select_params)
             if result:
                 existing_id = result[0]
-                EventLogger.log_debug("Updating row: %s: %s - %s" % (row['country_code'], row['ip_range_start'], row['ip_range_end']))
+                EventLogger.log_debug(f"[{i}/{total_rows}] Updating row: {row['country_code']}: {row['ip_range_start']} - {row['ip_range_end']}")
                 db.execute_update(update_query, [existing_id])
             
             else:
-                EventLogger.log_debug("Inserting row: %s: %s - %s" % (row['country_code'], row['ip_range_start'], row['ip_range_end']))
+                EventLogger.log_debug(f"[{i}/{total_rows}] Inserting row: {row['country_code']}: {row['ip_range_start']} - {row['ip_range_end']}")
                 params = [row['ip_range_start'], row['ip_range_end'], row['country_code']]
                 db.execute_insert(insert_query, params)
