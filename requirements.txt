@@ -1,4 +1,5 @@
 requests
 python-csv
+python-nmap
 psycopg2
 python-dotenv
