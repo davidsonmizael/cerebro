@@ -16,6 +16,9 @@ class PostgresConnector:
             user=self.user,
             password=self.password
         )
+        with self.conn.cursor() as cursor:
+            cursor.execute("SET search_path TO cerebro")
+            
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
