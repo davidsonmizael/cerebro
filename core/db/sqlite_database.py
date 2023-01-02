@@ -32,7 +32,7 @@ class SQLiteDatabase:
     def create_tables(self):
         queries = []
         queries.append('''CREATE TABLE IF NOT EXISTS asn_data (id INTEGER PRIMARY KEY, country_code TEXT, ip_range_start TEXT, ip_range_end TEXT, create_date TEXT, last_seen_date TEXT, last_scan_date TEXT)''')
-        queries.append('''CREATE TABLE IF NOT EXISTS ip (id INTEGER PRIMARY KEY AUTOINCREMENT, ip_range_id INT, ipv4 TEXT, ipv6 TEXT, hostname TEXT, status TEXT)''')
+        queries.append('''CREATE TABLE IF NOT EXISTS ip (id INTEGER PRIMARY KEY AUTOINCREMENT, asn_data_id INT, ipv4 TEXT, ipv6 TEXT, hostname TEXT, status TEXT)''')
         queries.append('''CREATE TABLE IF NOT EXISTS task (name TEXT PRIMARY KEY, frequency TEXT, last_run_date TEXT, status TEXT)''')
         queries.append('''CREATE TABLE IF NOT EXISTS task_run (id INTEGER PRIMARY KEY AUTOINCREMENT, task_name TEXT, start_date TEXT, end_date TEXT, status TEXT, additional_info TEXT)''')
         queries.append('''CREATE TABLE IF NOT EXISTS task_config (id INTEGER PRIMARY KEY AUTOINCREMENT, task_name TEXT, config_name TEXT, config_value TEXT)''')
