@@ -1,2 +1,3 @@
 requests
 python-csv
+psycopg2
