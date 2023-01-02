@@ -1,7 +1,7 @@
 import requests, csv
 
 from core.task import TaskInterface
-from core.db import SQLiteDatabase
+from core.db import PostgresConnector
 from core.logger import EventLogger
 from core.decorator import monitor_task
 from core.util.task_util import get_task_config
@@ -17,7 +17,7 @@ class UpdateASNTask(TaskInterface):
         data = self.get_asn_data()
         
         EventLogger.log_info("Populating database")
-        with SQLiteDatabase() as db:
+        with PostgresConnector() as db:
             self.insert_data(db, data)
 
         EventLogger.log_info("Data update completed")
@@ -29,19 +29,20 @@ class UpdateASNTask(TaskInterface):
         csv_text = response.text
         return csv.DictReader(csv_text.split('\n'), fieldnames=['ip_range_start', 'ip_range_end', 'country_code'])
 
-    def insert_data(self, db: SQLiteDatabase, data: csv.DictReader) -> None:
-        select_query = "SELECT id FROM asn_data WHERE country_code = ? AND ip_range_start = ? AND ip_range_end = ?"
-        insert_query = "INSERT INTO asn_data(ip_range_start, ip_range_end, country_code, create_date, last_seen_date) VALUES (?, ?, ?, datetime('now', 'localtime'), datetime('now', 'localtime'));"
-        update_query = "UPDATE asn_data SET last_seen_date = datetime('now', 'localtime') WHERE id = ?"
+    def insert_data(self, db: PostgresConnector, data: csv.DictReader) -> None:
+        select_query = "SELECT id FROM asn_data WHERE country_code = %s AND ip_range_start = %s AND ip_range_end = %s"
+        insert_query = "INSERT INTO asn_data(ip_range_start, ip_range_end, country_code, create_date, last_seen_date) VALUES (%s, %s, %s, now(), now());"
+        update_query = "UPDATE asn_data SET last_seen_date = now() WHERE id = %s"
+        
         for row in data:
             select_params = [row['country_code'], row['ip_range_start'], row['ip_range_end']]
-            result = db.execute_fetchone(select_query, select_params)
+            result = db.execute_select(select_query, select_params)
             if result:
                 existing_id = result[0]
                 EventLogger.log_debug("Updating row: %s: %s - %s" % (row['country_code'], row['ip_range_start'], row['ip_range_end']))
-                db.execute(update_query, [existing_id])
+                db.execute_update(update_query, [existing_id])
             
             else:
                 EventLogger.log_debug("Inserting row: %s: %s - %s" % (row['country_code'], row['ip_range_start'], row['ip_range_end']))
                 params = [row['ip_range_start'], row['ip_range_end'], row['country_code']]
-                db.execute(insert_query, params)
+                db.execute_insert(insert_query, params)

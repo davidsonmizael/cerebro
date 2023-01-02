@@ -1,6 +1,6 @@
 import inspect
 from datetime import datetime
-from core.db import SQLiteDatabase
+from core.db import PostgresConnector
 
 def get_log_type():
     stack = inspect.stack()
@@ -21,9 +21,9 @@ def get_caller_class_name():
     return None
 
 def get_current_time():
-    return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    return datetime.now()
 
 def save_event_in_db(event_name, timestamp, message, log_type):
-    with SQLiteDatabase() as db:
-        db.execute("INSERT INTO event (event_name, timestamp, message, type) VALUES (?, ?, ?, ?)", [event_name, timestamp, message, log_type])
+    with PostgresConnector() as db:
+        db.execute_insert("INSERT INTO event (event_name, timestamp, message, type) VALUES (%s, %s, %s, %s)", [event_name, timestamp, message, log_type])
 
