@@ -1,4 +1,4 @@
-from core import SQLiteDatabase
+from core.db import SQLiteDatabase
 
 def get_frequency(task_name):
     with SQLiteDatabase() as db:
