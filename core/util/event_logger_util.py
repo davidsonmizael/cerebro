@@ -1,6 +1,6 @@
 import inspect
 from datetime import datetime
-from core import SQLiteDatabase
+from core.db import SQLiteDatabase
 
 def get_log_type():
     stack = inspect.stack()
