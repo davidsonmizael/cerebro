@@ -1,8 +1,7 @@
 from functools import wraps
 from datetime import datetime
-from util.task_util import *
-from util.event_logger_util import *
-from core import EventLogger
+from core.util.task_util import *
+from core.logger import EventLogger
 import traceback
 
 def monitor_task(func):
