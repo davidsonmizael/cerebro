@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from util.task_util import get_frequency
+from core.util.task_util import get_frequency
 from threading import Thread
 
 class TaskInterface(Thread):
