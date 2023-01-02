@@ -33,7 +33,6 @@ class UpdateASNTask(TaskInterface):
         select_query = "SELECT id FROM asn_data WHERE country_code = ? AND ip_range_start = ? AND ip_range_end = ?"
         insert_query = "INSERT INTO asn_data(ip_range_start, ip_range_end, country_code, create_date, last_seen_date) VALUES (?, ?, ?, datetime('now', 'localtime'), datetime('now', 'localtime'));"
         update_query = "UPDATE asn_data SET last_seen_date = datetime('now', 'localtime') WHERE id = ?"
-        c = 0
         for row in data:
             select_params = [row['country_code'], row['ip_range_start'], row['ip_range_end']]
             result = db.execute_fetchone(select_query, select_params)
@@ -46,7 +45,3 @@ class UpdateASNTask(TaskInterface):
                 EventLogger.log_debug("Inserting row: %s: %s - %s" % (row['country_code'], row['ip_range_start'], row['ip_range_end']))
                 params = [row['ip_range_start'], row['ip_range_end'], row['country_code']]
                 db.execute(insert_query, params)
-            
-            c += 1
-            if c == 100:
-                break
