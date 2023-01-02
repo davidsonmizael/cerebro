@@ -1,4 +1,4 @@
-from util.event_logger_util import *
+from core.util.event_logger_util import *
 import logging
 
 logging.basicConfig(
