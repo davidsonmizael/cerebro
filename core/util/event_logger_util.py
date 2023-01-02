@@ -18,7 +18,7 @@ def get_caller_class_name():
         #if caller class name is not preset, returns the file name with the relative path
         return prev_stack_frame['__file__'].split('cerebro')[1]
 
-    return "Unknown"
+    return None
 
 def get_current_time():
     return datetime.now().strftime("%Y-%m-%d %H:%M:%S")

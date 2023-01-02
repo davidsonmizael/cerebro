@@ -1,5 +1,4 @@
 from abc import abstractmethod
-from functools import wraps
 from util.task_util import get_frequency
 
 class TaskInterface:

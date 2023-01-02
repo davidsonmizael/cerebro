@@ -1,9 +1,10 @@
 import requests, csv
 
-from core.task_interface import TaskInterface
-from core.sqlite_database import SQLiteDatabase
-from core.event_logger import EventLogger
-from core.decorators import monitor_task, get_task_config
+from core.task import TaskInterface
+from core.db import SQLiteDatabase
+from core.logger import EventLogger
+from core.decorator import monitor_task
+from core.util.task_util import get_task_config
 
 class UpdateASNTask(TaskInterface):
 

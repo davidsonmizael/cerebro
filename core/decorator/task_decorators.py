@@ -1,6 +1,7 @@
 from functools import wraps
 from datetime import datetime
 from util.task_util import *
+from util.event_logger_util import *
 from core import EventLogger
 import traceback
 
