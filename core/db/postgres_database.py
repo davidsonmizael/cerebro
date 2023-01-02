@@ -24,9 +24,11 @@ class PostgresConnector:
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.conn.close()
 
-    def execute_select(self, query, params=None):
+    def execute_select(self, query, params=None, fetch_one=False):
         with self.conn.cursor() as cursor:
             cursor.execute(query, params)
+            if fetch_one:
+                return cursor.fetchone()
             return cursor.fetchall()
 
     def execute_insert(self, query, params=None):
