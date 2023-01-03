@@ -23,7 +23,8 @@ class MapActiveIpsTask(TaskInterface):
             
         EventLogger.log_info(f"Scanning {total_hosts} IPs from retrieved masks")
         for asn in data:
-            self.check_asn_ips(asn)
+            with PostgresConnector() as db:
+                self.find_asn_ips(asn, db)
 
     def get_ip_masks(self, db: PostgresConnector) -> list:
         hosts_limit = int(get_task_config(self.task_name, 'hosts_limit'))
@@ -55,10 +56,13 @@ class MapActiveIpsTask(TaskInterface):
 
         return asn_list, total_hosts
 
-    def check_asn_ips(self, data: dict) -> None:
+    def find_asn_ips(self, data: dict, db: PostgresConnector) -> None:
         arguments = '-sn'
         log_prefix = f"[asn_data_id={data['asn_data_id']}]"
+
+        select_query = "SELECT id FROM ip WHERE ipv4 = %s"
         insert_query = "INSERT INTO ip (asn_data_id, hostname, ipv4, ipv6, state, create_date, last_update) VALUES (%s, %s, %s, %s, %s, now(), now())"
+        update_query = "UPDATE ip SET last_update = now(), hostname = %s, state = %s where id = %s"
 
         EventLogger.log_info(f"{log_prefix} Scanning total of {data['total_hosts']} IPs ({data['ip_range_start']} - {data['ip_range_end']})")
         nm = nmap.PortScanner()
@@ -70,17 +74,21 @@ class MapActiveIpsTask(TaskInterface):
             nm.scan(hosts=mask, arguments=arguments)
             scan_stats = nm.scanstats()
             EventLogger.log_info(f"{mask_log_prefix} Finished scan in {scan_stats['elapsed']} seconds. Total of {scan_stats['uphosts']}/{scan_stats['totalhosts']} found.")
-
             
-            for host in nm.all_hosts():  
+            for i, host in enumerate(nm.all_hosts(), start=1):
                 host = nm[host]
                 hostname = host.hostname()
                 ipv4 = host['addresses']['ipv4'] if 'ipv4' in host['addresses'] else None
                 ipv6 = host['addresses']['ipv6'] if 'ipv6' in host['addresses'] else None
                 state = host.state()
-                EventLogger.log_debug(f"{mask_log_prefix}[{ipv4=}][{hostname=}] Saving data into database")
-                with PostgresConnector() as db:
+
+                result = db.execute_select(select_query, [ipv4])
+                if result:
+                    existing_id = result[0]
+                    EventLogger.log_debug(f"{mask_log_prefix}[{i}/{scan_stats['uphosts']}][{ipv4=}][{hostname=}] Updating row")
+                    db.execute_update(update_query, [hostname, state, existing_id])
+                else:
+                    EventLogger.log_debug(f"{mask_log_prefix}[{ipv4=}][{hostname=}] Saving data into database")
                     db.execute_insert(insert_query, [data['asn_data_id'], hostname, ipv4, ipv6, state])
 
-        with PostgresConnector() as db:
-            db.execute_update("update asn_data set last_scan_date = now() where id = %s", [data['asn_data_id']])
+        db.execute_update("update asn_data set last_scan_date = now() where id = %s", [data['asn_data_id']])
